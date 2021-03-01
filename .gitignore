@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# IDE Specific
+.idea*
+
+# CMake local build
+cmake-*
+
+# User specific preferences
+*.user
