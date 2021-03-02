@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <singleton.hpp>
+#include <Patterno/singleton.hpp>
 
 struct Object {
     Object(std::string&& ss, int ii) :
