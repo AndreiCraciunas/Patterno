@@ -55,6 +55,6 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - cmake -D ENABLE_COVERAGE:BOOL=TRUE ../
+  - cmake ../
   - cmake --build . -- -j2
   - ctest -j2
