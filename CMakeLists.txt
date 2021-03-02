@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
-if(BUILD_TESTING AND SI_BUILD_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
