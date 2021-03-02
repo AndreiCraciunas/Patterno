@@ -33,9 +33,11 @@
 
 # IDE Specific
 .idea*
+.vs*
 
 # CMake local build
 cmake-*
+out*
 
 # User specific preferences
 *.user
