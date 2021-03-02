@@ -41,8 +41,8 @@ target_sources(
           src/base_unit_tests/singleton.cc)
 
 target_include_directories(
-  SI_detail_tests PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-                          $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
+  Patterno_unit_tests PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                                $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 
 target_compile_features(Patterno_unit_tests PRIVATE cxx_std_17)
 target_link_libraries(Patterno_unit_tests Catch2::Catch2)
