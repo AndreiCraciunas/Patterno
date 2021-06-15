@@ -1,18 +1,25 @@
 #include <catch2/catch.hpp>
 #include <Patterno/command.hpp>
+#include <map>
 
 struct PhoneBook
 {
+	friend bool operator<(const PhoneBook& lhs, const PhoneBook& rhs)
+	{
+		lhs; rhs;
+		return true;
+	}
+
 	std::map<std::string, std::string> _records;
 };
 
-struct InsertContact : public Command<PhoneBook, std::string, std::size_t position>
+struct InsertContact : public pat::Command<PhoneBook, std::string, std::size_t>
 {
 	InsertContact(std::string &&str, std::size_t pos = std::string::npos) : _str{ std::move(str) }, _pos{ pos } {}
 
 	auto DoIt(PhoneBook &pb) -> bool
 	{
-		pb.insert(_str, _str);
+		pb._records.insert(_str, _str);
 		return true;
 	}
 
@@ -35,9 +42,8 @@ TEST_CASE(
 	"THEN"
 	"Adding a new contact at any given position will be successful and will enlarge our record")
 {
-	Cmder.DoIt<InsertContact>("A true name");
-
-	REQUIRE(Pb.records == 1);
+	REQUIRE(Cmder.DoIt(std::make_shared<InsertContact>("A true name", 2)));
+	REQUIRE(Pb._records.size() == 1);
 }
 //
 //class InsertStringCommand : public ICommand {

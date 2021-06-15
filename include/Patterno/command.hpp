@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <queue>
 #include <vector>
+#include <iterator>
 
 namespace pat
 {
@@ -10,7 +11,6 @@ namespace pat
 	struct Command
 	{
 		virtual ~Command() = default;
-		Command(Args && ... args) = default;
 
 		virtual bool DoIt(ObjectToCommand &) = 0;
 		virtual bool UndoIt(ObjectToCommand &) = 0;
@@ -25,25 +25,24 @@ namespace pat
 		Commander& operator=(const Commander&) = delete;
 		Commander& operator=(Commander&&) = delete;
 
-		Commander(ObjectToCommand &object) : object_{ object };
+		Commander(ObjectToCommand &object) : _object{ object } {};
 
-		[[nodiscard]] auto DoIt(Command &&cmd) noexcept -> bool
+		template <typename CommandChild>
+		[[nodiscard]] auto DoIt(std::shared_ptr<CommandChild> cmd) noexcept -> bool
 		{
 			bool ok{ true };
 
-			ok = ok && cmd.DoIt(std::ref(_object));
-			ok = ok && RegisterCommand(std::move(cmd))
+			ok = ok && cmd->DoIt(std::ref(_object));
+			ok = ok && RegisterCommand(std::move(cmd));
 
-				return ok;
+			return ok;
 		}
 
-		template <typename CommandType,
-			//typename std::enable_if<std::is_base_of<Command, CommandType>::value>::type,
-			typename ... Args>
-			[[nodiscard]] auto DoIt(Args && ... args) noexcept -> bool
-		{
-			return DoIt(CommandType<ObjectToCommand>{std::forward<Args>(args)...});
-		}
+		//template <typename CommandType, typename ... Args>
+		//[[nodiscard]] auto DoIt(Args && ... args) noexcept -> bool
+		//{
+		//	return DoIt(std::make_shared<CommandType, typename ... Args>{std::forward<Args>(args)...});
+		//}
 
 		[[nodiscard]] auto UndoIt() noexcept -> bool
 		{
@@ -60,14 +59,14 @@ namespace pat
 			bool ok{ true };
 
 			ok = ok && MoveHeadForward();
-			ok = ok && (*_it).DoIt(std::ref(_object));
+			ok = ok && (*_it)->DoIt(std::ref(_object));
 
 			return ok;
 		}
 
 	private:
-		template <typename CommandType>
-		auto RegisterCommand(CommandType && cmd) -> bool
+		template <typename CommandChild>
+		auto RegisterCommand(std::shared_ptr<CommandChild> && cmd) -> bool
 		{
 			_commands.emplace_back(std::move(cmd));
 			return MoveHeadForward();
@@ -78,7 +77,7 @@ namespace pat
 			if (_it == _commands.begin())
 				return false;
 
-			--it;
+			_it--;
 			return true;
 		}
 
@@ -87,13 +86,16 @@ namespace pat
 			if (_it == _commands.end())
 				return false;
 
-			++it;
+			_it++;
 			return true;
 		}
 
 	private:
+		using Commands = std::vector<std::shared_ptr<Command<ObjectToCommand>>>;
+		using CommandsIterator = typename std::vector<std::shared_ptr<Command<ObjectToCommand>>>::iterator;
+		
 		ObjectToCommand &_object;
-		std::vector<Command> _commands{};
-		std::vector<Command>::iterator _it{ _commands.end() };
+		Commands _commands{};
+		CommandsIterator _it{ _commands.begin() };
 	};
 }
