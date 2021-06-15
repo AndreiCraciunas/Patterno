@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.12)
 
 find_program(CONAN conan)
 if(NOT CONAN)
@@ -38,7 +38,8 @@ add_executable(Patterno_unit_tests)
 target_sources(
   Patterno_unit_tests
   PRIVATE src/Catch2Main.cc
-          src/base_unit_tests/singleton.cc)
+          src/base_unit_tests/singleton.cc
+		  src/base_unit_tests/command.cc)
 
 target_include_directories(
   Patterno_unit_tests PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
